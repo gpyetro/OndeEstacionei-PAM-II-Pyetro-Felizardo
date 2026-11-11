@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+dist/
+build/
+android/
+ios/
+*.keystore
+*.jks
+.env
+.env.*
+npm-debug.log*
+.DS_Store

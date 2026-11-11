@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Onde Estacionei?",
+    "slug": "onde-estacionei-pamii",
+    "scheme": "ondeestacionei",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "android": {
+      "package": "com.pamii.ondeestacionei",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0A1427"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Sua localização será usada para salvar a vaga e mostrar o caminho de volta ao carro."
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permita o acesso à localização para registrar a vaga e encontrar seu veículo."
+        }
+      ],
+      "expo-notifications",
+      "expo-font",
+      "expo-system-ui",
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true,
+          "widgets": [
+            {
+              "name": "ParkingWidget",
+              "displayName": "Onde Estacionei?",
+              "description": "Tempo do estacionamento e distância aproximada do carro",
+              "android": {
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "minWidth": 180,
+                "minHeight": 110,
+                "initialLayout": "./src/widgets/ParkingWidget.tsx"
+              }
+            }
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "project": "PAM II - Projeto 4"
+    }
+  }
+}
