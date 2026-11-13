@@ -1,92 +1,94 @@
-# Onde Estacionei? 🚗
+# Onde Estacionei? — PAM II
 
-**Projeto 4 — Estacionamento Inteligente**  
-**Disciplina:** Programação de Aplicativos Móveis II (PAM II)  
-**Curso:** Técnico em Desenvolvimento de Sistemas  
-**Autor e apresentação:** Pyetro Gabriel Cordeiro Felizardo (individual)
+**Projeto 4: Estacionamento Inteligente**  
+**Aluno:** Pyetro Gabriel Cordeiro Felizardo  
+**Turma:** 3DS Manhã — ETEC Zona Leste  
+**Disciplina:** Programação de Aplicativos Móveis II (PAM II)
 
-Aplicativo para registrar onde o veículo foi estacionado, exibir sua localização no mapa, calcular rota para pedestres, acompanhar o prazo da vaga e receber lembretes locais.
+O **Onde Estacionei?** é um aplicativo em React Native para guardar a localização do carro e facilitar o retorno à vaga. Ele reúne o registro por GPS, a consulta de um percurso a pé, um temporizador de estacionamento e informações úteis sobre a vaga.
 
-## Recursos
+## O que foi implementado
 
-- GPS com permissão durante o uso e gravação das coordenadas da vaga.
-- Mapa com marcadores do carro e do usuário e rota a pé consultada sob demanda.
-- Tempo restante e estimativa de distância calculada por Haversine.
-- Notificação local agendada para 10 minutos antes do vencimento.
-- Widget Android com tempo e distância conforme a última atualização realizada com o app aberto.
-- Leitura opcional do barômetro para estimativa de altitude ou informação manual do andar.
-- Persistência de dados no AsyncStorage.
-- Interface com quatro abas: Início, Mapa, Registrar e Ajustes.
+- **Registro da vaga:** salva as coordenadas obtidas pelo GPS, com identificação do andar, número da vaga e observações opcionais.
+- **Mapa:** exibe os pontos do usuário e do veículo e permite solicitar uma rota de caminhada pela internet.
+- **Tempo e aviso:** mostra a contagem regressiva do estacionamento e tenta agendar uma notificação local dez minutos antes do vencimento.
+- **Widget Android:** exibe um resumo do último tempo e da distância calculados enquanto o aplicativo estava em uso.
+- **Sensor e cadastro manual:** consulta o barômetro quando disponível e permite informar o andar manualmente.
+- **Dados salvos no aparelho:** utiliza AsyncStorage, sem necessidade de criar conta ou banco de dados externo.
 
-## Tecnologia
+A interface está organizada em quatro abas: **Início, Mapa, Registrar e Ajustes**.
 
-React Native, Expo SDK 58, TypeScript, `expo-location`, `react-native-maps`, `expo-notifications`, `expo-sensors`, `expo-widgets`, `@expo/ui` e `@react-native-async-storage/async-storage`.
+## Como abrir e testar
 
-## Comece por aqui
+### Requisitos
 
-**Leia o arquivo [`GUIA-WINDOWS.md`](GUIA-WINDOWS.md).** Ele explica instalação, chave Google Maps, dispositivo Android, compilação, testes, GitHub e solução de erros.
+- Node.js e npm;
+- Android Studio com SDK e NDK configurados **ou** computador com ambiente Android equivalente;
+- emulador Android ou celular Android com depuração USB;
+- conexão com a internet para obter rotas;
+- uma chave habilitada para **Maps SDK for Android** para visualizar o mapa nativo na compilação própria do app.
 
-### Comandos principais
+### Passos
+
+No terminal, dentro da pasta do projeto:
 
 ```bash
 npm install
 npx expo install --fix
+npx expo-doctor
 npm test
+npx tsc --noEmit
+```
+
+Para configurar a chave Google Maps **sem colocá-la no GitHub**, use uma variável de ambiente. Exemplo no PowerShell do Windows:
+
+```powershell
+$env:GOOGLE_MAPS_API_KEY="SUA_CHAVE_AQUI"
+```
+
+Com o emulador/celular Android conectado e reconhecido por `adb devices`:
+
+```powershell
 npx expo run:android
 ```
 
-Antes do `run:android`, configurar variável de ambiente `GOOGLE_MAPS_API_KEY` como descrito no guia. Para testar widgets Android é necessário um **development build**, não Expo Go.
+**Atenção:** esta aplicação utiliza `expo-widgets`; por isso, o widget **não pode ser testado no Expo Go**. É preciso instalar um build nativo. A chave do Google Maps também precisa ser configurada *antes* da compilação nativa. Se a escola fornecer uma chave para testes, prefira utilizá-la.
 
-## Organização
+### O que verificar no aplicativo
 
+1. Autorizar a localização e registrar uma vaga com andar e horário.
+2. Conferir o local salvo na tela inicial.
+3. Abrir o mapa e solicitar o percurso a pé.
+4. Solicitar uma notificação de teste em **Ajustes**.
+5. Fechar e reabrir o aplicativo para verificar o registro salvo.
+6. Adicionar o widget à tela inicial do Android e conferir o resumo.
+7. Encerrar o estacionamento e verificar se os dados foram limpos.
+
+## Testes e situação do projeto
+
+Foram executados **9 testes automatizados das funções de cálculo e validação**, todos aprovados. Na preparação realizada no notebook, o TypeScript não indicou erros e o Expo Doctor registrou **20/20 verificações aprovadas**.
+
+**A execução completa no Android ainda precisa ser confirmada.** A tentativa de compilação foi interrompida por uma instalação incompleta do NDK (`CXX1101`: ausência de `source.properties` em `ndk/27.1.12297006`). Isso é um problema do ambiente de compilação identificado na tentativa, mas **não comprova** que todas as funções nativas estejam corretas. O projeto deve ser compilado e testado em outro computador antes de considerá-lo validado em Android.
+
+## Arquivos principais
+
+```text
+App.tsx                     Telas e navegação do aplicativo
+app.json                    Configuração do Expo e do widget
+app.config.js               Leitura da chave do Google Maps
+src/services/               GPS/armazenamento, notificações, rotas e widget
+src/utils/parking.ts        Cálculos e validações
+src/widgets/                Widget Android
+tests/                       Testes automatizados
+assets/                      Ícones
 ```
-OndeEstacionei-PAM-II/
-├── App.tsx                   # Telas, fluxos e interface
-├── index.ts                  # Entrada do aplicativo
-├── app.json                  # Permissões e widget Android
-├── app.config.js            # Configuração nativa da chave do Maps
-├── src/
-│   ├── services/
-│   │   ├── parkingStorage.ts # AsyncStorage
-│   │   ├── reminders.ts      # Notificações locais
-│   │   ├── walkingRoute.ts   # Consulta de rota a pé
-│   │   └── widget.ts         # Atualização do widget
-│   ├── utils/parking.ts      # Cálculos, formatos e validações
-│   └── widgets/ParkingWidget.tsx
-├── assets/                   # Ícones do aplicativo
-├── tests/                    # Testes automáticos das funções puras
-├── GUIA-WINDOWS.md           # Instalação e GitHub
-└── ROTEIRO-VIDEO.md          # Roteiro de demonstração
-```
 
-## Status de validação (11/11/2026)
+## Observações
 
-**Testes de lógica: 9/9 aprovados; TypeScript: aprovado; Expo Doctor: 20/20.** A compilação Android foi interrompida por um NDK incompleto (`CXX1101`), portanto não há validação de execução em emulador. Veja [STATUS-E-TESTES.md](STATUS-E-TESTES.md). A apresentação entregue é uma **prévia visual/técnica**, não captura de uso real.
+- A distância na tela inicial é em linha reta; a rota de caminhada é calculada separadamente.
+- As rotas dependem do serviço público FOSSGIS/OpenStreetMap e podem ficar indisponíveis.
+- O widget mostra o último resumo atualizado pelo app, não monitora a localização em segundo plano.
+- O barômetro fornece uma estimativa de altitude; o andar manual é mais confiável para estacionamentos fechados.
+- A demonstração em vídeo é **uma apresentação visual do projeto**, não uma gravação do aplicativo executando.
 
-## Limitações importantes
-
-- O cálculo de rota depende de internet e do servidor público FOSSGIS/OpenStreetMap. A linha direta tracejada não é uma rota caminhável; não serve como orientação para atravessar ruas.
-- Em uma versão Android própria, o Google Maps SDK exige chave de API válida e configuração do projeto no Google Cloud; é necessário envolver o professor ou responsável se houver exigência de cadastro de faturamento.
-- A distância da home e do widget é a distância geográfica em linha reta, **não** o percurso real a pé.
-- A atualização do GPS e do widget ocorre enquanto o app está em uso; não há rastreamento contínuo em segundo plano.
-- O Android pode restringir ou atrasar avisos conforme bateria, notificações e permissões.
-- O barômetro estima altitude pela pressão padrão, não permite identificar um andar com precisão; existe campo manual para andar.
-- Os dados são locais; não há backend, conta de usuário ou pagamento de Zona Azul.
-- O servidor de rota recebe coordenadas quando o usuário pede o cálculo. Consulte a [política do serviço](https://routing.openstreetmap.de/about.html).
-
-## Testes
-
-`npm test` executa testes automatizados da distância (Haversine), formatação de tempo e distância, conversão de pressão e validação. Isso **não** substitui a execução e verificação no Android. Para checklist manual, veja [`GUIA-WINDOWS.md`](GUIA-WINDOWS.md).
-
-## Fontes técnicas
-
-- [React Native Maps — Expo SDK 58](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/)
-- [Expo Location](https://docs.expo.dev/versions/v58.0.0/sdk/location/)
-- [Expo Notifications](https://docs.expo.dev/versions/v58.0.0/sdk/notifications/)
-- [Expo Widgets](https://docs.expo.dev/versions/v58.0.0/sdk/widgets/)
-- [Expo Barometer](https://docs.expo.dev/versions/latest/sdk/barometer/)
-- [FOSSGIS Routing](https://routing.openstreetmap.de/about.html)
-
-## Entrega
-
-Repositório GitHub com os arquivos do código-fonte + vídeo com o aplicativo em execução, conforme instruções do professor.
+**Referências técnicas:** [Expo](https://docs.expo.dev/), [React Native Maps](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/) e [Expo Widgets](https://docs.expo.dev/versions/latest/sdk/widgets/).
